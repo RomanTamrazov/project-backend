@@ -53,6 +53,14 @@ async def upload_task_with_image(task: TaskRequestModel = Depends(get_task_data)
     return "OK"
 
 
+@router.post("/text")
+async def upload_task_with_text(task: TaskRequestModel = Depends(get_task_data)):
+    await create_task(task_category=task.category,
+                     data_json=task.data_json,
+                     user_id=task.assigned_user_id)
+    return "OK"
+
+
 # @router.post("/image")
 # async def upload_image(file: UploadFile = File(...)):
 #     file_bytes = await file.read()
