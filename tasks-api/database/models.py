@@ -1,10 +1,20 @@
 from datetime import datetime
 from typing import List, Optional
 from sqlalchemy import BigInteger, Column, String, ForeignKey, Table, func
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declared_attr
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
+from database.enums import TaskCategoryEnum
 
-engine = create_async_engine('sqlite+aiosqlite:///db.sqlite3', echo=True)
+DB_USER = "testuser"
+DB_PASSWORD = "passwd123!"
+DB_HOST = "127.0.0.1"
+DB_PORT = 5432
+DB_NAME = "mydb"
+
+DATABASE_URL = (f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@"
+                f"{DB_HOST}:{DB_PORT}/{DB_NAME}")
+
+engine = create_async_engine(url=DATABASE_URL, echo=True)
 
 async_session = async_sessionmaker(engine)
 
@@ -14,6 +24,13 @@ class Base(AsyncAttrs, DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
+    @declared_attr.directive
+    def __tablename__(cls) -> str:
+        return cls.__name__.lower() + 's'
+
+class Task(Base):
+    assigned_user_id: Mapped[int]
+    category: Mapped[TaskCategoryEnum]
 
 async def async_main():
     async with engine.begin() as conn:

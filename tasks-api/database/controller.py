@@ -5,10 +5,7 @@ from database.dao.session_maker import connection
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, create_model
 from typing import List, Optional
-
-
-class UserDAO(BaseDAO[User]):
-    model = User
+from database.pydantic_schemes import TaskModel
 
 
 class TaskDAO(BaseDAO[Task]):
@@ -16,3 +13,11 @@ class TaskDAO(BaseDAO[Task]):
 
 
 default_order_lmbd = lambda a: a.created_at.desc()
+
+
+@connection(commit=True)
+async def create_task(session: AsyncSession, user_id: int, task_category: TaskCategoryEnum):
+    await TaskDAO.add(session=session, values=TaskModel(
+        assigned_user_id = user_id,
+        category = task_category
+    ))
