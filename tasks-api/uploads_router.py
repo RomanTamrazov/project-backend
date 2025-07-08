@@ -20,7 +20,7 @@ class TaskRequestModel(BaseModel):
 async def get_task_data(task: str = Form(...)):
     return TaskRequestModel(**json.loads(task))
 
-@router.post("/image")
+@router.post("/{file_type}")
 async def upload_task_with_image(task: TaskRequestModel = Depends(get_task_data), file: UploadFile = File(...),
                                 second_file: Annotated[Union[UploadFile, None], File()] = None):
     upload_url = f"{URL}/upload/images"
@@ -49,6 +49,8 @@ async def upload_task_with_image(task: TaskRequestModel = Depends(get_task_data)
                      data_json=task.data_json,
                      user_id=task.assigned_user_id,
                      file_key_1=file_key_1, file_key_2=file_key_2 if file_key_2 else None)
+    
+    return "OK"
 
 
 # @router.post("/image")

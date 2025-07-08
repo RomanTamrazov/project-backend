@@ -43,6 +43,7 @@ services:
     networks:
       - dev
   postgres:
+    container_name: "postgres"
     image: postgres:14.18-bookworm
     environment:
       POSTGRES_DB: "mydb"
