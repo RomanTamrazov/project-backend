@@ -31,6 +31,7 @@ class Base(AsyncAttrs, DeclarativeBase):
 class Task(Base):
     assigned_user_id: Mapped[int]
     category: Mapped[TaskCategoryEnum]
+    data_json: Mapped[str] = mapped_column(String(4096), nullable=False)
 
 async def async_main():
     async with engine.begin() as conn:

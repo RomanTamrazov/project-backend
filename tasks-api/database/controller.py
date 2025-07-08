@@ -22,14 +22,16 @@ async def get_tasks(session: AsyncSession, user_id: int | None = None,
                     offset: int = 0):
     data = await TaskDAO.find_all(session=session, filters=TaskModel(
         assigned_user_id=user_id,
-        category=task_category
+        category=task_category,
     ), order_by_lmbd=default_order_lmbd, limit=limit, offset=offset)
     validated_data = [TaskModel.model_validate(i) for i in data]
     return validated_data
 
 @connection(commit=True)
-async def create_task(session: AsyncSession, user_id: int, task_category: TaskCategoryEnum):
+async def create_task(session: AsyncSession, user_id: int, task_category: TaskCategoryEnum, 
+                    data_json: str):
     await TaskDAO.add(session=session, values=TaskModel(
         assigned_user_id = user_id,
-        category = task_category
+        category = task_category,
+        data_json=data_json
     ))
