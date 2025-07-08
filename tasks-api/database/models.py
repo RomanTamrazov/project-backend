@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
-from sqlalchemy import BigInteger, Column, String, ForeignKey, Table, func
+from sqlalchemy import BigInteger, Column, String, ForeignKey, Table, func, JSOn
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declared_attr
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
 from database.enums import TaskCategoryEnum
@@ -31,7 +31,7 @@ class Base(AsyncAttrs, DeclarativeBase):
 class Task(Base):
     assigned_user_id: Mapped[int]
     category: Mapped[TaskCategoryEnum]
-    data_json: Mapped[str] = mapped_column(String(4096), nullable=False)
+    data_json: Mapped[dict[str, Any]] = mapped_column(JSON)
 
 async def async_main():
     async with engine.begin() as conn:

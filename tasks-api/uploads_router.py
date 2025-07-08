@@ -1,5 +1,7 @@
 from fastapi import APIRouter, UploadFile, File
 from pydantic import BaseModel
+from typing import Optional, Any
+from database.enums import TaskCategoryEnum
 import httpx
 
 
@@ -8,7 +10,9 @@ URL = "http://example.com"
 router = APIRouter(prefix="/upload")
 
 class TaskRequestModel(BaseModel):
-    
+    assigned_user_id: Optional[int]
+    category: TaskCategoryEnum
+    data_json: dict[str, Any]
 
 # @router.post("/image")
 # async def upload_image(file: UploadFile = File(...)):
