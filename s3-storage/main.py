@@ -7,6 +7,8 @@ from io import BytesIO
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
 
+import uvicorn
+
 
 class S3Client:
     def __init__(
@@ -115,3 +117,6 @@ async def get_file_route(bucket_name: str, object_name: str):
     return StreamingResponse(content=buffer,
                              media_type=content_type,
                              headers={"Content-Disposition": f"attachment; filename={object_name}"})
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=5050)

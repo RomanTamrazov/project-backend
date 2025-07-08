@@ -1,4 +1,19 @@
 services:
+  
+  tasks-api:
+    build: tasks-api/
+    ports:
+      - "8000:8000"
+    depends_on:
+      - upload-api
+
+  upload-api:
+    build: s3-storage/
+    ports:
+      - "5050:5050"
+    depends_on:
+      - minio
+
   minio:
     image: minio/minio:latest
     command: server --console-address ":9001" /data/
