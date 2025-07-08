@@ -1,4 +1,5 @@
 from fastapi import APIRouter, UploadFile, File
+from pydantic import BaseModel
 import httpx
 
 
@@ -6,6 +7,8 @@ URL = "http://example.com"
 
 router = APIRouter(prefix="/upload")
 
+class TaskRequestModel(BaseModel):
+    
 
 # @router.post("/image")
 # async def upload_image(file: UploadFile = File(...)):
