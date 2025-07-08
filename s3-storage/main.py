@@ -82,13 +82,13 @@ def get_content_type(filename: str, fallback="application/octet-stream") -> str:
 
 app = FastAPI()
 
-@app.post("/upload")
-async def upload_file_route(file: UploadFile = File(...)):
+@app.post("/upload/{bucket_name}")
+async def upload_file_route(bucket_name: str, file: UploadFile = File(...)):
     s3_client = S3Client(
         access_key=ACCESS_KEY,
         secret_key=SECRET_KEY,
         endpoint_url=ENDPOINT_URL,
-        bucket_name="mybucket"
+        bucket_name=bucket_name
     )
     content_type = file.content_type or get_content_type(file.filename)
     await s3_client.upload_file_bin(
