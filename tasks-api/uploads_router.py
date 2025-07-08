@@ -14,6 +14,11 @@ class TaskRequestModel(BaseModel):
     category: TaskCategoryEnum
     data_json: dict[str, Any]
 
+
+@router.post("/image")
+async def upload_task_with_image(file: UploadFile = File(...)):
+    
+
 # @router.post("/image")
 # async def upload_image(file: UploadFile = File(...)):
 #     file_bytes = await file.read()

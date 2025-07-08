@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import List, Optional
-from sqlalchemy import BigInteger, Column, String, ForeignKey, Table, func, JSOn
+from typing import List, Optional, Any
+from sqlalchemy import BigInteger, Column, String, ForeignKey, Table, func, JSON
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declared_attr
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
 from database.enums import TaskCategoryEnum
