@@ -2,6 +2,7 @@ from fastapi import APIRouter, UploadFile, File
 from pydantic import BaseModel
 from typing import Optional, Any
 from database.enums import TaskCategoryEnum
+from database.controller import create_task
 import httpx
 
 
@@ -16,7 +17,7 @@ class TaskRequestModel(BaseModel):
 
 
 @router.post("/image")
-async def upload_task_with_image(file: UploadFile = File(...)):
+async def upload_task_with_image(task: TaskRequestModel, file: UploadFile = File(...)):
     
 
 # @router.post("/image")

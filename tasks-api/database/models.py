@@ -33,6 +33,9 @@ class Task(Base):
     category: Mapped[TaskCategoryEnum]
     data_json: Mapped[dict[str, Any]] = mapped_column(JSON)
 
+    file_key_1: Mapped[Optional[str]]
+    file_key_2: Mapped[Optional[str]]
+
 async def async_main():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

@@ -29,9 +29,13 @@ async def get_tasks(session: AsyncSession, user_id: int | None = None,
 
 @connection(commit=True)
 async def create_task(session: AsyncSession, user_id: int, task_category: TaskCategoryEnum, 
-                    data_json: dict[str, Any]):
+                    data_json: dict[str, Any],
+                    file_key_1: str | None = None,
+                    file_key_2: str | None = None,):
     await TaskDAO.add(session=session, values=TaskModel(
         assigned_user_id = user_id,
         category = task_category,
-        data_json=data_json
+        data_json=data_json,
+        file_key_1=file_key_1,
+        file_key_2=file_key_2
     ))
