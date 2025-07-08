@@ -10,6 +10,7 @@ class TaskCategoryEnum(str, enum.Enum):
     WEAR_DETERMINATION = "wear"
     PRODUCT_CONTENTS_CHECK = "product_contents"
     MULTIMODAL_MATCHING = "multimodal_matching"
+    CONTEXT_ARGUMENT_CLASSIFICATION = "argument_classification"
     CHECK_INFORMATION_SOURCE_RELIABILITY = "source_reliability"
     TEXT_CONTRADICTIONS_CHECK = "contraditctions_check"
     STATEMENT_INTENT_ANALYSIS = "intent_analysis"
