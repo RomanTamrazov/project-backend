@@ -7,7 +7,7 @@ from database.enums import TaskCategoryEnum
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, create_model
 from typing import List, Optional, Any
-from database.pydantic_schemes import TaskModel
+from database.pydantic_schemes import TaskModel, TaskFilterModel
 
 
 class TaskDAO(BaseDAO[Task]):
@@ -18,11 +18,13 @@ default_order_lmbd = lambda a: a.created_at.desc()
 
 
 @connection(commit=False)
-async def get_tasks(session: AsyncSession, user_id: int | None = None,
+async def get_tasks(session: AsyncSession, task_id: int | None = None,
+                    user_id: int | None = None,
                     task_category: TaskCategoryEnum | None = None,
                     limit: int | None = None,
                     offset: int = 0):
-    data = await TaskDAO.find_all(session=session, filters=TaskModel(
+    data = await TaskDAO.find_all(session=session, filters=TaskFilterModel(
+        id=task_id,
         assigned_user_id=user_id,
         category=task_category,
     ), order_by_lmbd=default_order_lmbd, limit=limit, offset=offset)

@@ -13,3 +13,15 @@ class TaskModel(BaseModel):
     file_key_2: Optional[str]
 
     model_config = ConfigDict(from_attributes=True, use_enum_values=True)
+
+
+class TaskFilterModel(BaseModel):
+    id: Optional[int] = None
+    assigned_user_id: Optional[int] = None
+    category: Optional[TaskCategoryEnum] = None
+    data_json: Optional[dict[str, Any]] = None
+
+    file_key_1: Optional[str] = None
+    file_key_2: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
