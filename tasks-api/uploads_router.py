@@ -3,13 +3,38 @@ from pydantic import BaseModel, ConfigDict
 from typing import Optional, Any, Annotated, Union
 from database.enums import TaskCategoryEnum
 from database.controller import create_task
+from database.pydantic_schemes import TaskModel
 import httpx
 import json
+from faststream import FastStream, Context
+from faststream.kafka import KafkaBroker
 
 
 URL = "http://upload-api:5050"
 
 router = APIRouter(prefix="/upload")
+
+broker = KafkaBroker(bootstrap_servers="kafka:9092")
+stream = FastStream(broker=broker)
+
+to_tasks = broker.publisher("tasks")
+
+@broker.publisher("tasks")
+async def publish_to_tasks(msg: str):
+    return msg
+
+@broker.subscriber("tasks", no_ack=True)
+async def dummy_consumer(msg: str, context: Context()):
+    print(f"Received test message: {msg[:100]}...")
+    context.ack()
+
+@router.on_event("startup")
+async def startup():
+    await broker.start()
+
+@router.on_event("shutdown")
+async def shutdown():
+    await broker.close()
 
 class TaskRequestModel(BaseModel):
     assigned_user_id: Optional[int] = None
@@ -45,19 +70,22 @@ async def upload_task_with_image(task: TaskRequestModel = Depends(get_task_data)
             if response.status_code != 200:
                 raise HTTPException(status_code=response.status_code)
             file_key_2 = response.json()["file_key"]
-    await create_task(task_category=task.category,
+    new_task = await create_task(task_category=task.category,
                      data_json=task.data_json,
                      user_id=task.assigned_user_id,
                      file_key_1=file_key_1, file_key_2=file_key_2 if file_key_2 else None)
-    
+    message = TaskModel.model_validate(new_task).model_dump_json()
+    await to_tasks.publish(message=message)
     return "OK"
 
 
 @router.post("/text")
 async def upload_task_with_text(task: TaskRequestModel = Depends(get_task_data)):
-    await create_task(task_category=task.category,
+    new_task = await create_task(task_category=task.category,
                      data_json=task.data_json,
                      user_id=task.assigned_user_id)
+    message = TaskModel.model_validate(new_task).model_dump_json()
+    await to_tasks.publish(message=message)
     return "OK"
 
 
