@@ -2,6 +2,8 @@ import asyncio
 from datetime import datetime
 from database.dao.basedao import BaseDAO
 from database.dao.session_maker import connection
+from database.models import Task
+from database.enums import TaskCategoryEnum
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, create_model
 from typing import List, Optional, Any
@@ -28,8 +30,9 @@ async def get_tasks(session: AsyncSession, user_id: int | None = None,
     return validated_data
 
 @connection(commit=True)
-async def create_task(session: AsyncSession, user_id: int, task_category: TaskCategoryEnum, 
+async def create_task(session: AsyncSession, task_category: TaskCategoryEnum, 
                     data_json: dict[str, Any],
+                    user_id: int | None = None,
                     file_key_1: str | None = None,
                     file_key_2: str | None = None,):
     await TaskDAO.add(session=session, values=TaskModel(

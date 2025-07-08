@@ -70,12 +70,23 @@ class S3Client:
                     return file_content
             except client.exceptions.NoSuchKey:
                 return None
+    
+    async def ensure_bucket_exists(self):
+        async with self.get_client() as client:
+            try:
+                response = await client.create_bucket(Bucket=self.bucket_name)
+                print(f"Bucket '{self.bucket_name}' created successfully.")
+                print(response)
+            except client.exceptions.BucketAlreadyOwnedByYou:
+                print(f"Bucket '{self.bucket_name}' already exists and is owned by you.")
+            except Exception as e:
+                print(f"Error creating bucket '{self.bucket_name}': {e}")
 
 
 
 ACCESS_KEY = "testuser"
 SECRET_KEY = "minio123"
-ENDPOINT_URL = "http://127.0.0.1:9000"
+ENDPOINT_URL = "http://minio:9000"
 
 
 def get_content_type(filename: str, fallback="application/octet-stream") -> str:
@@ -83,6 +94,25 @@ def get_content_type(filename: str, fallback="application/octet-stream") -> str:
     return content_type or fallback
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+async def startup_event():
+    s3_client_1 = S3Client(
+        access_key=ACCESS_KEY,
+        secret_key=SECRET_KEY,
+        endpoint_url=ENDPOINT_URL,
+        bucket_name="images" 
+    )
+    await s3_client_1.ensure_bucket_exists()
+    s3_client_2 = S3Client(
+        access_key=ACCESS_KEY,
+        secret_key=SECRET_KEY,
+        endpoint_url=ENDPOINT_URL,
+        bucket_name="text" 
+    )
+    await s3_client_2.ensure_bucket_exists()
+
 
 @app.post("/upload/{bucket_name}")
 async def upload_file_route(bucket_name: str, file: UploadFile = File(...)):
@@ -98,7 +128,7 @@ async def upload_file_route(bucket_name: str, file: UploadFile = File(...)):
         object_name=file.filename,
         content_type=content_type
     )
-    return {"message": "ok"}
+    return {"file_key": file.filename}
 
 
 @app.get("/get/{bucket_name}/{object_name}")

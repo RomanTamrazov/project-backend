@@ -29,7 +29,7 @@ class Base(AsyncAttrs, DeclarativeBase):
         return cls.__name__.lower() + 's'
 
 class Task(Base):
-    assigned_user_id: Mapped[int]
+    assigned_user_id: Mapped[Optional[int]]
     category: Mapped[TaskCategoryEnum]
     data_json: Mapped[dict[str, Any]] = mapped_column(JSON)
 

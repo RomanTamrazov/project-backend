@@ -5,7 +5,7 @@ from database.enums import TaskCategoryEnum
 
 
 class TaskModel(BaseModel):
-    assigned_user_id: int
+    assigned_user_id: Optional[int]
     category: TaskCategoryEnum
     data_json: dict[str, Any]
 
