@@ -50,7 +50,7 @@ else:
     data.insert(1, core_version)
 # GPU
 if data[3] != "None":
-    data[3] = int(data[3].removeprefix("RTX "))
+    data[3] = int(data[3].removeprefix("RTX ").removeprefix("GTX "))
 else:
     data[3] = None
 try:
