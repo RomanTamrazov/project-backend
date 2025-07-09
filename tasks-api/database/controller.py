@@ -45,3 +45,9 @@ async def create_task(session: AsyncSession, task_category: TaskCategoryEnum,
         file_key_2=file_key_2
     ))
     return TaskModel.model_validate(task)
+
+@connection(commit=True)
+async def assign_task_to_user(session: AsyncSession, task_id: int, user_id: int):
+    await TaskDAO.update_one_by_id(session=session, data_id=task_id, values=TaskFilterModel(
+        assigned_user_id=user_id
+    ))
