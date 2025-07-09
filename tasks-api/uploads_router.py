@@ -19,14 +19,13 @@ stream = FastStream(broker=broker)
 
 to_tasks = broker.publisher("tasks")
 
-@broker.publisher("tasks")
-async def publish_to_tasks(msg: str):
-    return msg
+# @broker.publisher("tasks")
+# async def publish_to_tasks(msg: str):
+#     return msg
 
-@broker.subscriber("tasks", no_ack=True)
-async def dummy_consumer(msg: str, context: Context()):
-    print(f"Received test message: {msg[:100]}...")
-    context.ack()
+# @broker.subscriber("tasks", no_ack=True)
+# async def dummy_consumer(msg: str):
+#     print(f"Received test message: {msg[:100]}...")
 
 @router.on_event("startup")
 async def startup():
