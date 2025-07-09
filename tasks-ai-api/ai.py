@@ -415,3 +415,5 @@ def predict_from_input(query, title, cpu, ram, storage, gpu):
     feats = extract_features(row)
     pred = clf.predict([feats])[0]
     return label_rev_map[pred]
+import joblib
+joblib.dump(clf, "itmo_model.pkl")
