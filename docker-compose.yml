@@ -30,7 +30,17 @@ services:
       - postgres
     networks:
       - dev
-    
+
+  search-api:
+    build: search-api/
+    ports:
+      - "7000:7000"
+    depends_on:
+      - kafka
+      - tasks-api
+    networks:
+      - dev
+      - kafka-net  
   
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.0
