@@ -1,0 +1,27 @@
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+model_path = "./saved_model"
+tokenizer = AutoTokenizer.from_pretrained(model_path)
+model = AutoModelForSequenceClassification.from_pretrained(model_path)
+
+def predict(query, title, cpu, ram, storage, gpu):
+    text = query + " [SEP] " + title + " [SEP] " + cpu + " " + ram + " " + storage + " " + gpu
+    tokens = tokenizer(text, return_tensors="pt", truncation=True, padding="max_length", max_length=256)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+    model.eval()
+    with torch.no_grad():
+        tokens = {k: v.to(device) for k, v in tokens.items()}
+        output = model(**tokens)
+        pred = torch.argmax(output.logits, dim=1).item()
+    label_map = {0: "✅", 1: "⚠️", 2: "❌", 3: "❓"}
+    return label_map[pred]
+#----------------
+print(predict(
+    "ноутбук для работы с видео",
+    "Apple MacBook Pro 16 M2 Pro",
+    "Apple M2 Pro",
+    "32GB",
+    "1TB SSD",
+    "macOS, Final Cut"
+))
