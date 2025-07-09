@@ -1,5 +1,3 @@
-# TODO: Add logic for parsing Intel CPUs
-
 import enum
 
 class CategoryEnum(enum.Enum):
@@ -12,7 +10,7 @@ class ModelEnum(str, enum.Enum):
     AMD = "AMD"
 
 
-data_input = "Ноут для видео, Asus VivoBook, Ryzen 3 3500U, 8 GB RAM, 1024 GB SSD"
+data_input = "Ноут для видео, Asus VivoBook, Intel Core i5 13600K, 8 GB RAM, 1024 GB SSD"
 
 data = data_input.split(", ")
 data.pop(1)
@@ -44,6 +42,20 @@ if model == ModelEnum.AMD:
         data[2] = int(data[2][:4])
     except Exception:
         print("Error")
+    try:
+        data[3] = int(data[3][:2])
+    except Exception:
+        print("Error")
+    try:
+        data[4] = int(data[4][:4])
+    except Exception:
+        print("Error")
+else:
+    core_version = int(data[1].removeprefix("i")[:2])
+    generation = int(data[1][3:7])*10
+    data.pop(1)
+    data.insert(1, generation)
+    data.insert(1, core_version)
     try:
         data[3] = int(data[3][:2])
     except Exception:
