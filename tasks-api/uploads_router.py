@@ -6,18 +6,47 @@ from database.controller import create_task
 from database.pydantic_schemes import TaskModel
 import httpx
 import json
-from faststream import FastStream, Context
-from faststream.kafka import KafkaBroker
+# from faststream import FastStream, Context
+# from faststream.kafka import KafkaBroker
+from aiokafka import AIOKafkaProducer
 
 
 URL = "http://upload-api:5050"
 
 router = APIRouter(prefix="/upload")
 
-broker = KafkaBroker(bootstrap_servers="kafka:9092")
-stream = FastStream(broker=broker)
+producer = None
 
-to_tasks = broker.publisher("tasks")
+async def get_producer():
+    global producer
+    if producer is None:
+        producer = AIOKafkaProducer(bootstrap_servers="kafka:9092")
+        await producer.start()
+    return producer
+
+@router.on_event("startup")
+async def startup_event():
+    await get_producer()  # Initialize producer on startup
+
+@router.on_event("shutdown")
+async def shutdown_event():
+    if producer:
+        await producer.stop()
+
+
+async def publish_to_tasks(message: str):
+    try:
+        producer = await get_producer()
+        await producer.send("tasks", message.encode())
+        print(f"✅ Published message: {message[:100]}...")  # Debug log
+    except Exception as e:
+        print(f"❌ Publish failed: {e}")
+        raise HTTPException(500, "Message publishing failed")
+
+# broker = KafkaBroker(bootstrap_servers="kafka:9092")
+# stream = FastStream(broker=broker)
+
+# to_tasks = broker.publisher("tasks")
 
 # @broker.publisher("tasks")
 # async def publish_to_tasks(msg: str):
@@ -27,13 +56,13 @@ to_tasks = broker.publisher("tasks")
 # async def dummy_consumer(msg: str):
 #     print(f"Received test message: {msg[:100]}...")
 
-@router.on_event("startup")
-async def startup():
-    await broker.start()
+# @router.on_event("startup")
+# async def startup():
+#     await broker.start()
 
-@router.on_event("shutdown")
-async def shutdown():
-    await broker.close()
+# @router.on_event("shutdown")
+# async def shutdown():
+#     await broker.close()
 
 class TaskRequestModel(BaseModel):
     assigned_user_id: Optional[int] = None
@@ -74,7 +103,7 @@ async def upload_task_with_image(task: TaskRequestModel = Depends(get_task_data)
                      user_id=task.assigned_user_id,
                      file_key_1=file_key_1, file_key_2=file_key_2 if file_key_2 else None)
     message = TaskModel.model_validate(new_task).model_dump_json()
-    await to_tasks.publish(message=message)
+    await publish_to_tasks(message=message)
     return "OK"
 
 
@@ -84,7 +113,7 @@ async def upload_task_with_text(task: TaskRequestModel = Depends(get_task_data))
                      data_json=task.data_json,
                      user_id=task.assigned_user_id)
     message = TaskModel.model_validate(new_task).model_dump_json()
-    await to_tasks.publish(message=message)
+    await publish_to_tasks(message=message)
     return "OK"
 
 
