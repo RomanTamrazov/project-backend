@@ -1,5 +1,6 @@
 import joblib
 import enum
+import re
 clf = joblib.load("itmo_model.pkl")
 
 class CategoryEnum(enum.Enum):
