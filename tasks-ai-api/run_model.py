@@ -100,23 +100,22 @@ def cpu_performance_score(cpu_text: str) -> int:
 
 def gpu_performance_score(gpu_text: str) -> int:
     gpu_text = gpu_text.lower()
-    if "rtx 4090" in gpu_text:
+
+    if any(x in gpu_text for x in ["rtx 4090"]):
         return 95
-    elif "rtx 4080" in gpu_text:
+    elif any(x in gpu_text for x in ["rtx 4080", "rtx 5070"]):
         return 90
-    elif "rtx 4070" in gpu_text:
+    elif any(x in gpu_text for x in ["rtx 4070"]):
         return 85
-    elif "rtx 4060" in gpu_text:
+    elif any(x in gpu_text for x in ["rtx 4060", "rtx 5050", "rtx 3070"]):
         return 80
-    elif "rtx 3080" in gpu_text:
+    elif any(x in gpu_text for x in ["rtx 3080"]):
         return 75
-    elif "rtx 3070" in gpu_text:
-        return 70
     elif "rtx 3060" in gpu_text:
         return 65
     elif "rtx 3050" in gpu_text:
         return 60
-    elif "gtx 1660" in gpu_text or "gtx 1650" in gpu_text:
+    elif any(x in gpu_text for x in ["gtx 1660", "gtx 1650"]):
         return 50
     elif "gtx 1050" in gpu_text:
         return 40
@@ -126,8 +125,6 @@ def gpu_performance_score(gpu_text: str) -> int:
         return 0
     else:
         return 5
-
-
 
 def predict_from_input(query, title, cpu, ram, storage, gpu):
     row = {
