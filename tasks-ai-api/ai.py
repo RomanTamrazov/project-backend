@@ -60,11 +60,13 @@ def gpu_performance_score(gpu_text: str) -> int:
     if "rtx 4090" in gpu_text:
         return 95
     elif "rtx 4080" in gpu_text:
-        return 90
-    elif "rtx 4070" in gpu_text:
         return 85
+    elif "rtx 4070" in gpu_text:
+        return 75
     elif "rtx 4060" in gpu_text:
-        return 80
+        return 70
+    elif "rtx 4050" in gpu_text:
+        return 65
     elif "rtx 3080" in gpu_text:
         return 75
     elif "rtx 3070" in gpu_text:
@@ -73,6 +75,8 @@ def gpu_performance_score(gpu_text: str) -> int:
         return 65
     elif "rtx 3050" in gpu_text:
         return 60
+    elif "rtx 2050" in gpu_text:
+        return 55
     elif "gtx 1660" in gpu_text or "gtx 1650" in gpu_text:
         return 50
     elif "gtx 1050" in gpu_text:
