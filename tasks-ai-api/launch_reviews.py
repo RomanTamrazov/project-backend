@@ -1,5 +1,6 @@
 import joblib
 clf = joblib.load("logreg_sentiment_model.joblib")
+vec = joblib.load('tfidf_vectorizer_to_lounch.joblib')
 labels_map = {
     0: "🌞",
     1: "😐",
